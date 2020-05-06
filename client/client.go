@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type Message struct{
+type Message struct {
 	Text string `json:"text"`
 }
 
@@ -18,11 +18,12 @@ var (
 	port = flag.String("port", "8080", "port that using for connection")
 )
 
-func main(){
+func main() {
+	fmt.Println("...")
 	flag.Parse()
 
-	ws , err := connect()
-	if err != nil{
+	ws, err := connect()
+	if err != nil {
 		fmt.Println("connection problem")
 		return
 	}
@@ -43,17 +44,17 @@ func main(){
 
 	scaner := bufio.NewScanner(os.Stdin)
 
-	for scaner.Scan(){
+	for scaner.Scan() {
 		text := scaner.Text()
-		if text == ""{
+		if text == "" {
 			continue
 		}
 		m := Message{
-			Text:text,
+			Text: text,
 		}
 
 		err := websocket.JSON.Send(ws, m)
-		if err != nil{
+		if err != nil {
 			fmt.Println("Error sending message: ", err.Error())
 			break
 		}
@@ -61,16 +62,16 @@ func main(){
 	}
 }
 
-func connect()(ws *websocket.Conn, err error){
+func connect() (ws *websocket.Conn, err error) {
 	return websocket.Dial(fmt.Sprintf("ws://localhost:%s", *port), "", makeIP())
 }
 
-func makeIP() string{
+func makeIP() string {
 	var ip [4]int
 	for i := 0; i < 4; i++ {
 		rand.Seed(time.Now().UnixNano())
 		ip[i] = rand.Intn(256)
 	}
 
-	return fmt.Sprintf("http://%d.%d.%d.%d", ip[0], ip[1], ip[2],  ip[3])
+	return fmt.Sprintf("http://%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3])
 }
